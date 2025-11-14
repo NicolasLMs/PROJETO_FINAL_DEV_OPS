@@ -62,6 +62,9 @@ jobs:
         run: |
           echo "Aguardando 10s para o Flask iniciar..."
           sleep 10
+      
+      # LINHA 65 DEFEITUOSA REMOVIDA DAQUI
+
       - name: 5. Testar endpoint: / (Home)
         run: |
           # '-f' faz o curl falhar (exit code > 0) se o HTTP for 4xx ou 5xx
