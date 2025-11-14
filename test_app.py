@@ -38,7 +38,9 @@ def test_get_items_route(client):
 
 def test_swagger_ui_route(client):
     """Testa se a rota do Swagger UI carrega."""
-    response = client.get('/swagger')
+    
+    # CORREÇÃO AQUI: Dizemos ao cliente para seguir o redirect (308)
+    response = client.get('/swagger', follow_redirects=True)
     
     assert response.status_code == 200
     # Verifica se o HTML contém a palavra "Swagger"
