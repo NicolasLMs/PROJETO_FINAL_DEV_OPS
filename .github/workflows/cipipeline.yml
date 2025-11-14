@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10"] # Testar em algumas versões
+        python-version: ["3.9", "3.10"]
 
     steps:
       - name: 1. Clonar repositório
@@ -32,7 +32,7 @@ jobs:
 
       - name: 4. Rodar testes unitários com pytest
         run: |
-          pytest test_app.py # Rodamos o pytest
+          pytest test_app.py
 
   # ---------------------------------------------
   # JOB 2: Testes de Integração (Com Docker)
