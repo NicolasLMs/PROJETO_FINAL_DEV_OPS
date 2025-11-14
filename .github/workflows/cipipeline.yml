@@ -35,7 +35,7 @@ jobs:
         # Agora que o arquivo se chama 'test_app.py', o pytest
         # vai encontrá-lo automaticamente.
         run: |
-          python -m pytest
+          python -m pytest test_app.py
 
   # ---------------------------------------------
   # JOB 2: Testes de Integração (Usando Docker)
