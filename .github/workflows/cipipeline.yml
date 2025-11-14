@@ -31,8 +31,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: 4. Rodar testes unitários com pytest
+        # CORREÇÃO AQUI: Mudado de 'test_app.py' para 'teste_app.py'
         run: |
-          pytest test_app.py
+          pytest teste_app.py
 
   # ---------------------------------------------
   # JOB 2: Testes de Integração (Com Docker)
@@ -63,8 +64,7 @@ jobs:
           echo "Aguardando 10s para o Flask iniciar..."
           sleep 10
       
-      # LINHA 65 DEFEITUOSA REMOVIDA DAQUI
-
+      # CORREÇÃO AQUI: Garantindo que a indentação deste bloco está correta
       - name: 5. Testar endpoint: / (Home)
         run: |
           # '-f' faz o curl falhar (exit code > 0) se o HTTP for 4xx ou 5xx
