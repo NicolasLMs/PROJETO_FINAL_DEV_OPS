@@ -31,7 +31,6 @@ jobs:
           pip install -r requirements.txt
 
       - name: 4. Rodar testes unitários com pytest
-        # CORREÇÃO AQUI: Mudado de 'test_app.py' para 'teste_app.py'
         run: |
           pytest teste_app.py
 
@@ -41,7 +40,6 @@ jobs:
   integration-tests:
     runs-on: ubuntu-latest
     
-    # Este job só roda se 'unit-tests' passar
     needs: unit-tests 
 
     steps:
@@ -64,7 +62,6 @@ jobs:
           echo "Aguardando 10s para o Flask iniciar..."
           sleep 10
       
-      # CORREÇÃO AQUI: Garantindo que a indentação deste bloco está correta
       - name: 5. Testar endpoint: / (Home)
         run: |
           # '-f' faz o curl falhar (exit code > 0) se o HTTP for 4xx ou 5xx
@@ -87,7 +84,6 @@ jobs:
           ! curl -f http://localhost:1313/protected
 
       - name: 9. Limpeza (Parar o container)
-        # 'always()' garante que este passo rode mesmo se os testes falharem
         if: always() 
         run: |
           echo "Limpando o container..."
