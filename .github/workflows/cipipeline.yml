@@ -59,30 +59,25 @@ jobs:
 
       - name: 4. Aguardar a API iniciar
         run: |
-          echo "Aguardando 10s para o Flask iniciar..."
+          echo "Aguardando 10s para o Flask iniciar"
           sleep 10
-      
       - name: 5. Testar endpoint: / (Home)
         run: |
           # '-f' faz o curl falhar (exit code > 0) se o HTTP for 4xx ou 5xx
           # 'grep' verifica se o JSON esperado está na resposta
           curl -f http://localhost:1313/ | grep "API is running"
-
       - name: 6. Testar endpoint: /items
         run: |
           curl -f http://localhost:1313/items | grep "item1"
-
       - name: 7. Testar endpoint: /login (POST)
         run: |
           # Verificamos se a resposta do login contém 'access_token'
           curl -f -X POST http://localhost:1313/login | grep "access_token"
-
       - name: 8. Testar endpoint: /protected (sem token, deve falhar)
         run: |
           # Esperamos um erro 401. 
           # O '!' inverte o resultado: o passo SÓ PASSA se o curl falhar.
           ! curl -f http://localhost:1313/protected
-
       - name: 9. Limpeza (Parar o container)
         if: always() 
         run: |
