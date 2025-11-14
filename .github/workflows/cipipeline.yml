@@ -31,8 +31,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: 4. Rodar testes unitários com pytest
+        # CORREÇÃO AQUI: Simplificamos o comando.
+        # Agora que o arquivo se chama 'test_app.py', o pytest
+        # vai encontrá-lo automaticamente.
         run: |
-          pytest -m teste_app.py
+          python -m pytest
 
   # ---------------------------------------------
   # JOB 2: Testes de Integração (Usando Docker)
