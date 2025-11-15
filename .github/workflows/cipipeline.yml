@@ -1,4 +1,4 @@
-name: Pipeline de CI com 3 Jobs (Unit, Integ-Public, Integ-Auth)
+name: Pipeline de CI/CD (Testes e Deploy)
 
 on:
   push:
@@ -39,7 +39,6 @@ jobs:
   # ---------------------------------------------
   integration-test-public:
     runs-on: ubuntu-latest
-    # Este job só roda DEPOIS que 'unit-tests' passar
     needs: unit-tests 
 
     steps:
@@ -78,8 +77,6 @@ jobs:
   # ---------------------------------------------
   integration-test-auth:
     runs-on: ubuntu-latest
-    # Este job também roda DEPOIS de 'unit-tests'
-    # Ele vai rodar em PARALELO com o 'integration-test-public'
     needs: unit-tests
 
     steps:
@@ -112,3 +109,22 @@ jobs:
         run: |
           docker stop api_container
           docker rm api_container
+
+  # ---------------------------------------------
+  # JOB 4: Deploy no Render
+  # ---------------------------------------------
+  deploy-to-render:
+    runs-on: ubuntu-latest
+    
+    # Depende de TODOS os jobs de teste. Só roda se todos passarem.
+    needs: [unit-tests, integration-test-public, integration-test-auth]
+    
+    # IMPORTANTE: Só faz deploy em PUSH para a 'main', nunca em Pull Requests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 1. Acionar Deploy Hook do Render
+        run: |
+          # Usa o 'curl' para mandar um POST para o hook
+          # O ${{ secrets.RENDER_DEPLOY_HOOK }} é o segredo que você criou no GitHub
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
