@@ -1,4 +1,4 @@
-name: Pipeline de CI (Teste Unitário e Integração)
+name: Pipeline de CI com 3 Jobs (Unit, Integ-Public, Integ-Auth)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   # ---------------------------------------------
-  # JOB 1: Testes Unitários
+  # JOB 1: Testes Unitários (Não mudou)
   # ---------------------------------------------
   unit-tests:
     runs-on: ubuntu-latest
@@ -31,18 +31,16 @@ jobs:
           pip install -r requirements.txt
 
       - name: 4. Rodar testes unitários com pytest
-        # CORREÇÃO AQUI: Simplificamos o comando.
-        # Agora que o arquivo se chama 'test_app.py', o pytest
-        # vai encontrá-lo automaticamente.
         run: |
           python -m pytest test_app.py
 
   # ---------------------------------------------
-  # JOB 2: Testes de Integração (Usando Docker)
+  # JOB 2: Testes de Integração (Endpoints Públicos)
   # ---------------------------------------------
-  integration-tests:
+  integration-test-public:
     runs-on: ubuntu-latest
-    needs: unit-tests
+    # Este job só roda DEPOIS que 'unit-tests' passar
+    needs: unit-tests 
 
     steps:
       - name: 1. Clonar repositório
@@ -69,15 +67,47 @@ jobs:
         run: |
           curl -f http://localhost:1313/items | grep "item1"
 
-      - name: 7. Testar endpoint /login (POST)
+      - name: 7. Limpeza (parar container)
+        if: always()
+        run: |
+          docker stop api_container
+          docker rm api_container
+
+  # ---------------------------------------------
+  # JOB 3: Testes de Integração (Endpoints de Auth)
+  # ---------------------------------------------
+  integration-test-auth:
+    runs-on: ubuntu-latest
+    # Este job também roda DEPOIS de 'unit-tests'
+    # Ele vai rodar em PARALELO com o 'integration-test-public'
+    needs: unit-tests
+
+    steps:
+      - name: 1. Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Construir imagem Docker
+        run: |
+          docker build -t minha-api-teste .
+
+      - name: 3. Rodar container Docker em background
+        run: |
+          docker run -d -p 1313:1313 --name api_container minha-api-teste
+
+      - name: 4. Aguardar API iniciar
+        run: |
+          echo "Aguardando 10s para o Flask iniciar..."
+          sleep 10
+
+      - name: 5. Testar endpoint /login (POST)
         run: |
           curl -f -X POST http://localhost:1313/login | grep "access_token"
 
-      - name: 8. Testar endpoint /protected (sem token)
+      - name: 6. Testar endpoint /protected (sem token)
         run: |
           ! curl -f http://localhost:1313/protected
 
-      - name: 9. Limpeza (parar container)
+      - name: 7. Limpeza (parar container)
         if: always()
         run: |
           docker stop api_container
