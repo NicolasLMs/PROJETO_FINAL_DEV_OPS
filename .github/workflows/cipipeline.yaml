@@ -1,4 +1,4 @@
-name: CI/CD Pipeline with Docker and Compose
+name: CI/CD Pipeline
 
 on:
   push:
@@ -9,52 +9,42 @@ on:
 jobs:
 
   BUILD:
+    name: 1. Build
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # Versão atualizada
 
-      - name: Instalar Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install docker-compose -y
-
-      - name: Build com docker-compose
-        run: docker-compose -f docker-compose.yaml build
+      - name: Build com docker compose
+        run: docker compose -f docker-compose.yaml build
 
       - name: Validar sintaxe do app dentro do container
-        run: docker-compose run --rm api python -m py_compile app.py
+        run: docker compose run --rm api python -m py_compile app.py
 
   TEST:
+    name: 2. Test
     runs-on: ubuntu-latest
-    needs: build
+    needs: BUILD
 
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v3
-
-      - name: Instalar Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install docker-compose -y
+        uses: actions/checkout@v4
 
       - name: Build novamente (workspace do GitHub zera)
-        run: docker-compose -f docker-compose.yaml build
+        run: docker compose -f docker-compose.yaml build
 
       - name: Rodar testes
-        run: docker-compose run --rm api python -m unittest discover -s . -p "test_*.py"
+        run: docker compose run --rm api python -m unittest discover -s . -p "test_*.py"
 
 
   DEPLOY:
+    name: 3. Deploy
     runs-on: ubuntu-latest
-    needs: test
+    needs: TEST
     environment: production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v3
-
       - name: Trigger Vercel Deploy Hook
         run: curl -X POST "$RENDER_DEPLOY_HOOK"
         env:
