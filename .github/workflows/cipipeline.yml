@@ -21,7 +21,7 @@ jobs:
           sudo apt-get install docker-compose -y
 
       - name: Build com docker-compose
-        run: docker-compose -f docker-compose.yml build
+        run: docker-compose -f docker-compose.yaml build
 
       - name: Validar sintaxe do app dentro do container
         run: docker-compose run --rm api python -m py_compile app.py #py_compile valida a sintaxe dos arquivos
@@ -40,7 +40,7 @@ jobs:
           sudo apt-get install docker-compose -y
 
       - name: Build novamente (workspace do GitHub zera)
-        run: docker-compose -f docker-compose.yml build
+        run: docker-compose -f docker-compose.yaml build
 
       - name: Rodar testes unitários dentro do container
         run: docker-compose run --rm api python -m unittest discover -s . -p "test_*.py"
