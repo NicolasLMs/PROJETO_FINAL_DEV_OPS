@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  BUILD:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,9 +24,9 @@ jobs:
         run: docker-compose -f docker-compose.yaml build
 
       - name: Validar sintaxe do app dentro do container
-        run: docker-compose run --rm api python -m py_compile app.py #py_compile valida a sintaxe dos arquivos
+        run: docker-compose run --rm api python -m py_compile app.py
 
-  test:
+  TEST:
     runs-on: ubuntu-latest
     needs: build
 
@@ -42,11 +42,11 @@ jobs:
       - name: Build novamente (workspace do GitHub zera)
         run: docker-compose -f docker-compose.yaml build
 
-      - name: Rodar testes unitários dentro do container
+      - name: Rodar testes
         run: docker-compose run --rm api python -m unittest discover -s . -p "test_*.py"
 
 
-  deploy:
+  DEPLOY:
     runs-on: ubuntu-latest
     needs: test
     environment: production
