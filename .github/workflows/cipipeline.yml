@@ -1,4 +1,4 @@
-name: Pipeline de CI/CD (Testes e Deploy)
+name: Pipeline de CI (Testes para Vercel)
 
 on:
   push:
@@ -110,21 +110,4 @@ jobs:
           docker stop api_container
           docker rm api_container
 
-  # ---------------------------------------------
-  # JOB 4: Deploy no Render
-  # ---------------------------------------------
-  deploy-to-render:
-    runs-on: ubuntu-latest
-    
-    # Depende de TODOS os jobs de teste. Só roda se todos passarem.
-    needs: [unit-tests, integration-test-public, integration-test-auth]
-    
-    # IMPORTANTE: Só faz deploy em PUSH para a 'main', nunca em Pull Requests
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: 1. Acionar Deploy Hook do Render
-        run: |
-          # Usa o 'curl' para mandar um POST para o hook
-          # O ${{ secrets.RENDER_DEPLOY_HOOK }} é o segredo que você criou no GitHub
-          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
+# JOB 4 DE DEPLOY REMOVIDO - O Vercel cuida disso automaticamente!
