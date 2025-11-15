@@ -58,4 +58,4 @@ jobs:
       - name: Trigger Vercel Deploy Hook
         run: curl -X POST "$RENDER_DEPLOY_HOOK"
         env:
-          DEPLOY_GIT: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          DEPLOY_GIT: ${{ secrets.$RENDER_DEPLOY_HOOK }}
